@@ -20,5 +20,9 @@ This repository contains all the necessary components for the rover mobile robot
 
 ### 5. Supplementary
    - Additional supplementary files and resources.
+   
+### 6. Video Description
+[![Video Thumbnail](Simulations/src/rover_simulation/rover_description/images/rover_robot.png)](https://www.youtube.com/watch?v=BaKeS3Aeugk)
+
 
 
