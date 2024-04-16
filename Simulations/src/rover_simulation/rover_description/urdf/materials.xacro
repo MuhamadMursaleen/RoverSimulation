@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<!-- This is a xacro file for defining all color of links in gazebo for a rover
+      robot model -->
+
+<!-- Author Muhammad Mursaleen -->
+<!-- email  muhammadmursaleen09@gmail.com -->
+
+<robot name="materials" xmlns:xacro="http://ros.org/wiki/xacro">
+
+	<!-- Define all color of links in gazebo below  -->
+
+	<gazebo reference="${robot_name}_base_link">
+	    <material>Gazebo/Grey</material>
+	</gazebo>
+
+	<gazebo reference="${robot_name}_left_front_wheel_link">
+	    <material>Gazebo/Black</material>
+	</gazebo>
+
+	<gazebo reference="${robot_name}_right_front_wheel_link">
+	    <material>Gazebo/Black</material>
+	</gazebo>
+
+	<gazebo reference="${robot_name}_left_back_wheel_link">
+	    <material>Gazebo/Black</material>
+	</gazebo>
+
+	<gazebo reference="${robot_name}_right_back_wheel_link">
+	    <material>Gazebo/Black</material>
+	</gazebo>
+
+	<gazebo reference="${robot_name}_left_front_motor_link">
+	    <material>Gazebo/DarkGrey</material>
+	</gazebo>
+
+	<gazebo reference="${robot_name}_right_front_motor_link">
+	    <material>Gazebo/DarkGrey</material>
+	</gazebo>
+
+	<gazebo reference="${robot_name}_left_back_motor_link">
+	    <material>Gazebo/DarkGrey</material>
+	</gazebo>
+
+	<gazebo reference="${robot_name}_right_back_motor_link">
+	    <material>Gazebo/DarkGrey</material>
+	</gazebo>
+
+	<gazebo reference="${robot_name}_battery_link">
+	    <material>Gazebo/White</material>
+	</gazebo>
+
+	
+
+
+
+  
+
+
+</robot>	

@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+
+<!-- This is a xacro file for defining Default azebo pluging for skid steering control
+      for a rover robot model -->
+<!-- Author Muhammad Mursaleen -->
+<!-- email  muhammadmursaleen09@gmail.com -->
+
+<robot name="default_skid_steer_drive_plugin" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Default pluging for skid steering control for gazebo simulation -->
+   <xacro:macro name="plugin_skid_steer" params=" base_link ">
+      <gazebo>
+         <plugin name='skid_steer_drive' filename='libgazebo_ros_diff_drive.so'>
+            <ros>
+               <!-- Set namespace -->
+               <namespace>/${robot_name}</namespace>
+            </ros>
+
+            <!-- Update rate -->
+            <update_rate>100</update_rate>
+
+            <!-- Number of wheel pairs -->
+            <num_wheel_pairs>2</num_wheel_pairs>
+
+            <!-- wheels0 -->
+            <left_joint>${robot_name}_left_front_wheel_joint</left_joint>
+            <right_joint>${robot_name}_right_front_wheel_joint</right_joint>
+
+            <!-- wheels1-->
+            <left_joint>${robot_name}_left_back_wheel_joint</left_joint>
+            <right_joint>${robot_name}_right_back_wheel_joint</right_joint>
+
+            <!-- kinematics -->
+            <wheel_separation>${wheel_separation}</wheel_separation>
+            <wheel_separation>${wheel_separation}</wheel_separation>
+
+            <wheel_diameter>${2*wheel_radius}</wheel_diameter>
+            <wheel_diameter>${2*wheel_radius}</wheel_diameter>
+
+            <!-- limits -->
+            <max_wheel_torque>${44}</max_wheel_torque>
+            <max_wheel_acceleration>14.0</max_wheel_acceleration>
+
+            <!-- output -->
+            <publish_odom>true</publish_odom>
+            <publish_odom_tf>true</publish_odom_tf>
+            <publish_wheel_tf>true</publish_wheel_tf>
+
+            <odometry_frame>${base_link}</odometry_frame>
+            <robot_base_frame>${base_link}</robot_base_frame>
+
+         </plugin>
+      </gazebo>
+
+   </xacro:macro>
+
+   <!-- Call the skid steer plugin -->
+
+   <xacro:plugin_skid_steer  base_link="${robot_name}_base_link"/>
+    
+
+
+</robot>

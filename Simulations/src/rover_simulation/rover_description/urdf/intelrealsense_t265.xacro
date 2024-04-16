@@ -1,0 +1,162 @@
+<?xml version="1.0" ?>
+
+<!-- This is a xacro file for defining intel realsense t265 with all supportive
+  links for a rover robot model -->
+<!-- Author Muhammad Mursaleen -->
+<!-- email  muhammadmursaleen09@gmail.com -->
+
+<robot name="dom_lidar" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- properties -->
+
+  <xacro:property name="intelrealsense_t265_bar_height" default="0.09"/>
+  <xacro:property name="intelrealsense_t265_bar_mass" default="1.5"/>
+  <xacro:property name="intelrealsense_t265_sensor_mass" default="0.057"/>
+  <xacro:property name="intelrealsense_t265_sensor_support_mass" default="0.1"/>
+  <xacro:property name="camera_name" default="intelrealsense_t265_sensor"/>
+
+  <!-- Gazebo Color  -->
+
+  <gazebo reference="${robot_name}_intelrealsense_t265_sensor_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <!-- intelrealsense_t265_bar -->
+
+  <!-- Define a macro named "robot_base_link" for a link with a box shape at (0, 1, 1) -->
+  <xacro:macro name="intelrealsense_t265_bar" params=" parent">
+    <link name="${robot_name}_intelrealsense_t265_bar_link">
+      <origin xyz="0 0 0"/>
+      <visual>
+        <geometry>
+          <box size="0.04 0.08 0.26"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.04 0.08 0.26"/>
+        </geometry>
+      </collision>
+      <xacro:box_inertia m="${intelrealsense_t265_bar_mass}"  d="0.04 " w="0.08" h="0.26"/> 
+    </link>
+
+    <!-- Add a joint between parent and ${robot_name}_base_link -->
+        <joint name="${parent}_to_${robot_name}_intelrealsense_t265_bar_link" type="fixed">
+          <parent link="${parent}"/>
+          <child link="${robot_name}_intelrealsense_t265_bar_link"/>
+          <origin xyz="0.36 0 ${intelrealsense_t265_bar_height}"/>
+        </joint>
+    </xacro:macro>
+
+      <!-- Use the "robot_base_link" macro to create a link named "my_robot_base_link" -->
+    <xacro:intelrealsense_t265_bar  parent="${robot_name}_base_link"/>
+
+
+    <!-- intelrealsense_t265_sensor -->
+
+  <!-- Define a macro named "robot_base_link" for a link with a box shape at (0, 1, 1) -->
+  <xacro:macro name="intelrealsense_t265_sensor_support" params=" parent">
+    <link name="${robot_name}_intelrealsense_t265_sensor_support_link">
+      <origin xyz="0 0 0"/>
+      <visual>
+        <geometry>
+          <box size="0.035 0.17 0.03 "/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.035 0.17 0.03 "/>
+        </geometry>
+      </collision>
+      <xacro:box_inertia m="${intelrealsense_t265_sensor_support_mass}"  d="0.035 " w="0.17" h="0.03"/> 
+   </link>
+
+  <!-- Add a joint between parent and ${robot_name}_base_link -->
+      <joint name="${parent}_to_${robot_name}_intelrealsense_t265_sensor_support_link" type="fixed">
+        <parent link="${parent}"/>
+        <child link="${robot_name}_intelrealsense_t265_sensor_support_link"/>
+        <origin xyz="0.038 0 0.115"/>
+      </joint>
+  </xacro:macro>
+
+    <!-- Use the "robot_base_link" macro to create a link named "my_robot_base_link" -->
+  <xacro:intelrealsense_t265_sensor_support  
+    parent="${robot_name}_intelrealsense_t265_bar_link"/>
+
+  <!-- Define a macro named "robot_base_link" for a link with a box shape at (0, 1, 1) -->
+  <xacro:macro name="intelrealsense_t265_sensor" params=" parent">
+    <link name="${robot_name}_intelrealsense_t265_sensor_link">
+      <origin xyz="0 0 0"/>
+      <visual>
+        <geometry>
+          <box size="0.012 0.108 0.024 "/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.012 0.108 0.024 "/>
+        </geometry>
+      </collision>
+     <xacro:box_inertia m="${intelrealsense_t265_sensor_mass}"  d="0.012 " w="0.108" h="0.024"/> 
+   </link>
+
+  <!-- Add a joint between parent and ${robot_name}_base_link -->
+      <joint name="${parent}_to_${robot_name}_intelrealsense_t265_sensor_link" type="fixed">
+        <parent link="${parent}"/>
+        <child link="${robot_name}_intelrealsense_t265_sensor_link"/>
+        <origin xyz="0.0235 0 0"/>
+      </joint>
+  </xacro:macro>
+
+    <!-- Use the "robot_base_link" macro to create a link named "my_robot_base_link" -->
+  <xacro:intelrealsense_t265_sensor  parent="${robot_name}_intelrealsense_t265_sensor_support_link"/>
+
+  <!-- Gazebo plugin for 3d lidar -->
+  <xacro:macro name="intelrealsense_t265_sensor_plugin">
+    <gazebo reference="${robot_name}_intelrealsense_t265_sensor_link">
+      <sensor name="${robot_name}_camera" type="depth">
+        <update_rate>5</update_rate>
+        <camera>
+          <horizontal_fov>1.047198</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.05</near>
+            <far>3</far>
+          </clip>
+        </camera>
+        <plugin name="${robot_name}_camera_controller" filename="libgazebo_ros_camera.so">
+          <baseline>0.2</baseline>
+          <alwaysOn>true</alwaysOn>
+          <updateRate>1.0</updateRate>
+          <cameraName>${camera_name}_ir</cameraName>
+          <imageTopicName>/${camera_name}/color/image_raw</imageTopicName>
+          <cameraInfoTopicName>/${camera_name}/color/camera_info</cameraInfoTopicName>
+          <depthImageTopicName>/${camera_name}/depth/image_raw</depthImageTopicName>
+          <depthImageInfoTopicName>/${camera_name}/depth/camera_info</depthImageInfoTopicName>
+          <pointCloudTopicName>/${camera_name}/depth/points</pointCloudTopicName>
+          <frameName>${robot_name}_intelrealsense_t265_sensor_link</frameName>
+          <pointCloudCutoff>0.5</pointCloudCutoff>
+          <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
+          <distortionK1>0.00000001</distortionK1>
+          <distortionK2>0.00000001</distortionK2>
+          <distortionK3>0.00000001</distortionK3>
+          <distortionT1>0.00000001</distortionT1>
+          <distortionT2>0.00000001</distortionT2>
+          <CxPrime>0</CxPrime>
+          <Cx>0</Cx>
+          <Cy>0</Cy>
+          <focalLength>0</focalLength>
+          <hackBaseline>0</hackBaseline>
+        </plugin>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+
+  
+  
+  <!-- intelrealsense_t265_sensor Ended-->
+</robot>

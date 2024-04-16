@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+
+<!-- This is a xacro file for defining robosense RS 16 lidar with all supportive
+  links for a rover robot model -->
+<!-- Author Muhammad Mursaleen -->
+<!-- email  muhammadmursaleen09@gmail.com -->
+
+<robot name="rs_lidar" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- properties -->
+
+  <xacro:property name="lidar_rs_16_bar_height" default="0.2765"/>
+  <xacro:property name="lidar_rs_16_sensor_height" default="0.3565"/>
+  <xacro:property name="lidar_rs_16_bar_mass" default="3"/>
+  <xacro:property name="lidar_rs_16_sensor_mass" default="0.87"/>
+
+  <!-- Actual Max range of rs_16 = 150 -->
+  <xacro:property name="lidar_rs_16_sensor_max_range" default="5"/> 
+  <!-- Actual Min range of rs_16 = .40 -->
+  <xacro:property name="lidar_rs_16_sensor_min_range" default="0.4"/>
+
+  <!-- Gazebo Color  -->
+
+  <gazebo reference="${robot_name}_lidar_rs_16_sensor_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <!-- lidar_rs_16_bar -->
+
+  <!-- Define a macro named "robot_base_link" for a link with a box shape at (0, 1, 1) -->
+  <xacro:macro name="lidar_rs_16_bar" params=" parent">
+    <link name="${robot_name}_lidar_rs_16_bar_link">
+      <origin xyz="0 0 0"/>
+      <visual>
+        <geometry>
+          <box size="0.04 0.08 0.633"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.04 0.08 0.633"/>
+        </geometry>
+      </collision>
+      <xacro:box_inertia m="${lidar_rs_16_bar_mass}"  d="0.04 " w="0.08" h="0.633"/> 
+    </link>
+
+    <!-- Add a joint between parent and ${robot_name}_base_link -->
+        <joint name="${parent}_to_${robot_name}_lidar_rs_16_bar_link" type="fixed">
+          <parent link="${parent}"/>
+          <child link="${robot_name}_lidar_rs_16_bar_link"/>
+          <origin xyz="0.36 0 ${lidar_rs_16_bar_height}"/>
+        </joint>
+    </xacro:macro>
+
+      <!-- Use the "robot_base_link" macro to create a link named "my_robot_base_link" -->
+    <xacro:lidar_rs_16_bar  parent="${robot_name}_base_link"/>
+
+
+    <!-- lidar_rs_16_sensor -->
+
+  <!-- Define a macro named "robot_base_link" for a link with a box shape at (0, 1, 1) -->
+  <xacro:macro name="lidar_rs_16_sensor" params=" parent">
+    <link name="${robot_name}_lidar_rs_16_sensor_link">
+      <origin xyz="0 0 0"/>
+      <visual>
+        <geometry>
+          <cylinder length="0.08" radius="0.0525"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder length="0.08" radius="0.0525"/>
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertia m="${lidar_rs_16_sensor_mass}" r="0.0525" h="0.08"/>
+    </link>
+
+  <!-- Add a joint between parent and ${robot_name}_base_link -->
+      <joint name="${parent}_to_${robot_name}_lidar_rs_16_sensor_link" type="fixed">
+        <parent link="${parent}"/>
+        <child link="${robot_name}_lidar_rs_16_sensor_link"/>
+        <origin xyz="0.04 0 ${lidar_rs_16_sensor_height}"/>
+      </joint>
+  </xacro:macro>
+
+    <!-- Use the "robot_base_link" macro to create a link named "my_robot_base_link" -->
+  <xacro:lidar_rs_16_sensor  parent="${robot_name}_lidar_rs_16_bar_link"/>
+
+  <!-- Gazebo plugin for 3d lidar -->
+  <xacro:macro name="lidar_rs_16_sensor_plugin" >
+    <gazebo reference="${robot_name}_lidar_rs_16_sensor_link">
+        <sensor type="ray" name="block_laser_sensor">
+          <pose>0 0 0 0 0 0</pose>
+          <visualize>false</visualize>
+          <update_rate>5</update_rate>
+          <ray>
+            <scan>
+              <horizontal>
+                <samples>360</samples>
+                <resolution>1</resolution>
+                <min_angle>-3.14</min_angle>
+                <max_angle>3.14</max_angle>
+              </horizontal>
+              <vertical>
+                <samples>15</samples>
+                <resolution>1</resolution>
+                <min_angle>-0.261799</min_angle>
+                <max_angle>0.261799</max_angle>
+              </vertical>
+            </scan>
+
+            <range>
+              <min>${lidar_rs_16_sensor_min_range}</min>
+              <max>${lidar_rs_16_sensor_max_range}</max>
+              <resolution>0.02</resolution>
+            </range>
+
+
+            <noise>
+              <type>gaussian</type>
+              <!-- Noise parameters based on published spec for Hokuyo laser
+                  achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+                  stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+                  reading. -->
+              <mean>0.0</mean>
+              <stddev>0.01</stddev>
+            </noise>
+          </ray>
+          <plugin name="robosense_rs_16_lidar" filename="libgazebo_ros_velodyne_laser.so">
+            <updateRate>5</updateRate>
+            <topicName>/robosense_rs_16_lidar/out</topicName>
+            <frameName>${robot_name}_lidar_rs_16_sensor_link</frameName>
+          </plugin>
+        </sensor>
+      </gazebo>
+    </xacro:macro>
+
+    
+    <!-- lidar_rs_16_sensor Ended-->
+
+
+</robot>

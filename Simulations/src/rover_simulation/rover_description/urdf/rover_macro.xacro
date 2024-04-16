@@ -1,0 +1,306 @@
+<?xml version="1.0"?>
+
+<!-- This is a xacro file that contains defination of all links & joints
+      for a rover robot model -->
+<!-- Author Muhammad Mursaleen -->
+<!-- email  muhammadmursaleen09@gmail.com -->
+
+  <robot name="rover" xmlns:xacro="http://ros.org/wiki/xacro">
+
+
+    <!-- properties, materials & inertial parameters -->
+    <xacro:include filename="$(find ${package_name})/urdf/inertia_parameters_macro.xacro" /> 
+    <xacro:include filename="$(find ${package_name})/urdf/properties.xacro" /> 
+    <xacro:include filename="$(find ${package_name})/urdf/materials.xacro" />  
+
+    <!-- Links & Joints -->
+
+    
+  <!-- Define a macro named "empty_link" as a base link-->
+  <xacro:macro name="empty_link" params="link_name">
+    <link name="${link_name}">
+      <origin xyz="0 0 0"/>
+    </link>
+  </xacro:macro>
+
+  <!-- Define parent link as an empty link at (0, 0, 0) -->
+  <xacro:empty_link link_name="base_link"/>
+
+  <!-- Define a macro named "robot_base_link" for a link with a box shape at 
+  (0 0 ${base_height} ) -->
+  <xacro:macro name="robot_base_link" params=" parent">
+    <link name="${robot_name}_base_link">
+      <origin xyz="0 0 0"/>
+      <visual>
+        <geometry>
+          <box size="0.67 0.495 0.08"/>
+        </geometry>
+      </visual>
+
+      <collision>
+        <geometry>
+          <box size="0.67 0.495 0.08"/>
+        </geometry>
+      </collision>
+
+      <xacro:box_inertia m="${base_mass}"  d="0.67 " w="0.495" h="0.08"/> 
+
+      <material name="Gray">
+          <color rgba="0.5 0.5 0.5 1.0"/>
+        </material>
+
+    </link>
+
+    <!-- Add a joint between parent and ${robot_name}_base_link -->
+    <joint name="${parent}_to_${robot_name}_base_link" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${robot_name}_base_link"/>
+      <origin xyz="0 0 ${base_height}"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- Use the "robot_base_link" macro to create a link named "my_robot_base_link" -->
+  <xacro:robot_base_link  parent="base_link"/>
+
+  <!-- Wheel Started -->
+  <!-- Define a macro named "Wheel" for a motor link and joint -->
+    <xacro:macro name="wheel" params=" f_or_b l_or_r f_or_b_reflect l_or_r_reflect parent">
+      <link name="${robot_name}_${l_or_r}_${f_or_b}_wheel_link">
+        <origin xyz="0 0 0"/>
+        <visual>
+          <geometry>
+            <cylinder radius="${wheel_radius}" length="${wheel_lenght}"/>
+          </geometry>
+        </visual>
+        <collision>
+          <geometry>
+            <cylinder radius="${wheel_radius}" length="0.01"/>
+          </geometry>
+           <surface>
+            <!-- This friction pamareter don't contain reliable data!! -->
+            <friction>
+              <ode>
+                <mu>100000.0</mu>
+                <mu2>100000.0</mu2>
+                <fdir1>0 0 0</fdir1>
+                <slip1>0.0</slip1>
+                <slip2>0.0</slip2>
+              </ode>
+            </friction>
+            <contact>
+              <ode>
+                <soft_cfm>0</soft_cfm>
+                <soft_erp>0.2</soft_erp>
+                <kp>1e+5</kp>
+                <kd>1</kd>
+                <max_vel>0.01</max_vel>
+                <min_depth>0.001</min_depth>
+              </ode>
+            </contact>
+          </surface>
+        </collision>
+        <xacro:cylinder_inertia m="${wheel_mass}" r="${wheel_radius}" h="${wheel_lenght}"/>
+        <material name="Gray">
+          <color rgba="1 1 1 1.0"/>
+        </material>
+        
+      </link>
+
+      <!-- Add a joint between parent and wheel_link -->
+      <joint name="${robot_name}_${l_or_r}_${f_or_b}_wheel_joint" type="continuous">
+        <parent link="${parent}"/>
+        <child link="${robot_name}_${l_or_r}_${f_or_b}_wheel_link"/>
+        <origin xyz="${f_or_b_reflect} ${l_or_r_reflect} ${wheel_radius}" rpy="1.5708 0 0"/>
+        <axis xyz="0 0 -1" />
+        <limit effort="88" velocity="14" />
+
+      </joint>
+    </xacro:macro>
+
+    <!-- front left wheel-->
+    <xacro:wheel  parent="base_link" l_or_r="left" f_or_b="front"  
+        l_or_r_reflect="${wheel_left_pose}" f_or_b_reflect="${wheel_front_pose}"/>
+
+    <!-- Front Right wheel -->
+    <xacro:wheel  parent="base_link" l_or_r="right" f_or_b="front"  
+        l_or_r_reflect="${-wheel_left_pose}" f_or_b_reflect="${wheel_front_pose}"/>
+
+    <!-- back left wheel-->
+    <xacro:wheel  parent="base_link" l_or_r="left" f_or_b="back"  
+        l_or_r_reflect="${wheel_left_pose}" f_or_b_reflect="${-wheel_front_pose}"/>
+
+    <!-- Back Right wheel -->
+    <xacro:wheel  parent="base_link" l_or_r="right" f_or_b="back"  
+        l_or_r_reflect="${-wheel_left_pose}" f_or_b_reflect="${-wheel_front_pose}"/>
+
+    <!-- Wheel ended -->
+
+
+  <!-- motor Started -->
+  <!-- Define a macro named "motor" for a motor link and joint -->
+    <xacro:macro name="motor" params=" f_or_b l_or_r f_or_b_reflect l_or_r_reflect parent">
+      <link name="${robot_name}_${l_or_r}_${f_or_b}_motor_link">
+        <origin xyz="0 0 0"/>
+        <visual>
+          <geometry>
+            <cylinder radius="${motor_radius}" length="${motor_lenght}"/>
+          </geometry>
+        </visual>
+        <collision>
+          <geometry>
+            <cylinder radius="${motor_radius}" length="${motor_lenght}"/>
+          </geometry>
+        </collision>
+        <xacro:cylinder_inertia m="${motor_mass}" r="${motor_radius}" h="${motor_lenght}"/>
+        <material name="Gray">
+          <color rgba="0.5 0.5 0.5 1.0"/>
+        </material>
+      </link>
+      <!-- Add a joint between parent and motor_link  -->
+      <joint name="${robot_name}_${l_or_r}_${f_or_b}_motor_joint" type="fixed">
+        <parent link="${parent}"/>
+        <child link="${robot_name}_${l_or_r}_${f_or_b}_motor_link"/>
+        <origin xyz="${f_or_b_reflect} ${l_or_r_reflect} ${motor_height}" rpy="0 0 0"/>
+      </joint>
+    </xacro:macro>
+
+
+    <!-- front left motor-->
+    <xacro:motor  parent="${robot_name}_base_link" l_or_r="left" f_or_b="front"  
+        l_or_r_reflect="${motor_left_pose}" f_or_b_reflect="${motor_front_pose}"/>
+
+    <!-- Front Right motor -->
+    <xacro:motor  parent="${robot_name}_base_link" l_or_r="right" f_or_b="front"  
+        l_or_r_reflect="${-motor_left_pose}" f_or_b_reflect="${motor_front_pose}"/>
+
+    <!-- back left motor-->
+    <xacro:motor  parent="${robot_name}_base_link" l_or_r="left" f_or_b="back"  
+        l_or_r_reflect="${motor_left_pose}" f_or_b_reflect="${-motor_front_pose}"/>
+
+    <!-- Back Right motor -->
+    <xacro:motor  parent="${robot_name}_base_link" l_or_r="right" f_or_b="back"  
+        l_or_r_reflect="${-motor_left_pose}" f_or_b_reflect="${-motor_front_pose}"/>
+
+    <!-- motor ended -->
+
+
+  <!-- Battery -->
+  <!-- Define a macro named "battery" for a link with a box shape at 
+  (0 0 ${battery_height}) -->
+  <xacro:macro name="battery" params=" parent">
+    <link name="${robot_name}_battery_link">
+      <origin xyz="0 0 0"/>
+      <visual>
+        <geometry>
+          <box size="0.32 0.24 0.2"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.32 0.24 0.2"/>
+        </geometry>
+      </collision>
+      <xacro:box_inertia m="${battery_mass}"  d="0.32 " w="0.24" h="0.2"/> 
+      <material name="Gray">
+          <color rgba="0.5 0.5 0.5 1.0"/>
+        </material>
+    </link>
+
+    <!-- Add a joint between parent and ${robot_name}_base_link -->
+        <joint name="${parent}_to_${robot_name}_battery_link" type="fixed">
+          <parent link="${parent}"/>
+          <child link="${robot_name}_battery_link"/>
+          <origin xyz="0 0 ${battery_height}"/>
+        </joint>
+    </xacro:macro>
+
+    <!-- Use the "robot_base_link" macro to create a link for battery -->
+    <xacro:battery  parent="${robot_name}_base_link"/>
+
+    <!-- Battery Ended-->
+
+  
+    <!-- side_bar_ Started for the support of controll Box-->
+    <!-- Define a macro named "Wheel" for a side_bar_ link and joint -->
+    <xacro:macro name="side_bar" params=" f_or_b l_or_r f_or_b_reflect l_or_r_reflect parent">
+      <link name="${robot_name}_${l_or_r}_${f_or_b}_side_bar_link">
+        <origin xyz="0 0 0"/>
+        <visual>
+          <geometry>
+            <box size="0.04 0.04 0.24"/>
+          </geometry>
+        </visual>
+        <collision>
+          <geometry>
+            <box size="0.04 0.04 0.24"/>
+          </geometry>
+        </collision>
+        <xacro:box_inertia m="${side_bar_mass}"  d="0.04 " w="0.04" h="0.24"/> 
+        <material name="Gray">
+          <color rgba="0.5 0.5 0.5 1.0"/>
+        </material>
+      </link>
+
+     <!-- Add a joint between parent and side_bar_link  -->
+    <joint name="${robot_name}_${l_or_r}_${f_or_b}_side_bar_joint" type="fixed">
+        <parent link="${parent}"/>
+        <child link="${robot_name}_${l_or_r}_${f_or_b}_side_bar_link"/>
+        <origin xyz="${f_or_b_reflect} ${l_or_r_reflect} ${side_bar_height}" rpy="0 0 0"/>
+    </joint>
+    </xacro:macro>
+
+
+    <!-- front left side_bar-->
+    <xacro:side_bar  parent="${robot_name}_base_link" l_or_r="left" f_or_b="front"  
+        l_or_r_reflect="${side_bar_left_pose}" f_or_b_reflect="${side_bar_front_pose}"/>
+
+    <!-- Front Right side_bar -->
+    <xacro:side_bar  parent="${robot_name}_base_link" l_or_r="right" f_or_b="front"  
+        l_or_r_reflect="${-side_bar_left_pose}" f_or_b_reflect="${side_bar_front_pose}"/>
+
+    <!-- back left side_bar-->
+    <xacro:side_bar  parent="${robot_name}_base_link" l_or_r="left" f_or_b="back"  
+        l_or_r_reflect="${side_bar_left_pose}" f_or_b_reflect="${-side_bar_front_pose}"/>
+
+    <!-- Back Right side_bar -->
+    <xacro:side_bar  parent="${robot_name}_base_link" l_or_r="right" f_or_b="back"  
+        l_or_r_reflect="${-side_bar_left_pose}" f_or_b_reflect="${-side_bar_front_pose}"/>
+
+    <!-- side_bar ended -->
+
+  
+    <!-- controller_box -->
+    <!-- Define a macro named "robot_base_link" for a link with a box shape at (0, 1, 1) -->
+    <xacro:macro name="controller_box" params=" parent">
+      <link name="${robot_name}_controller_box_link">
+        <origin xyz="0 0 0"/>
+        <visual>
+          <geometry>
+            <box size="0.48 0.38 0.18"/>
+          </geometry>
+        </visual>
+        <collision>
+          <geometry>
+            <box size="0.48 0.38 0.18"/>
+          </geometry>
+        </collision>
+        <xacro:box_inertia m="${controller_box_mass}"  d="0.48 " w="0.38" h="0.18"/> 
+        <material name="Gray">
+            <color rgba="0.5 0.5 0.5 1.0"/>
+          </material>
+      </link>
+
+    <!-- Add a joint between parent and ${robot_name}_base_link -->
+      <joint name="${parent}_to_${robot_name}_controller_box_link" type="fixed">
+        <parent link="${parent}"/>
+        <child link="${robot_name}_controller_box_link"/>
+        <origin xyz="0 0 ${controller_box_height}"/>
+      </joint>
+    </xacro:macro>
+
+    <!-- Use the "robot_base_link" macro to create a link named "my_robot_base_link" -->
+    <xacro:controller_box  parent="${robot_name}_base_link"/>
+
+    <!-- controller_box Ended-->
+
+</robot>

@@ -1,0 +1,25 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+    use_sim_time: true
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    velocity_controller:
+      type: forward_command_controller/ForwardCommandController
+
+velocity_controller:
+  ros__parameters:
+    joints:
+      - rover_robot_left_front_wheel_joint
+      - rover_robot_left_back_wheel_joint
+      - rover_robot_right_front_wheel_joint
+      - rover_robot_right_back_wheel_joint
+    interface_name: velocity
+    command_interfaces:
+      - velocity
+    state_interfaces:
+      - position
+      - velocity
+      - effort

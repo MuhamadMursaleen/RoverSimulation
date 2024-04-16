@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<!-- This is a xacro file for defining all the properties related to lenghts and poses
+      for a rover robot model -->
+<!-- Author Muhammad Mursaleen -->
+<!-- email  muhammadmursaleen09@gmail.com -->
+
+<robot name="properties_for_rover" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- distances of all the joints from the center of the base link -->
+    <!-- & lenghts and radius of different links are defined below -->
+    <xacro:property name="wheel_front_pose" default="0.315000"/>
+    <xacro:property name="wheel_left_pose" default="0.315000"/>
+    <xacro:property name="wheel_radius" default="0.16"/>
+    <xacro:property name="wheel_lenght" default="0.1"/>
+    <xacro:property name="wheel_separation" default="0.63"/>
+    <xacro:property name="base_height" default="0.22"/>
+
+    <xacro:property name="motor_front_pose" default="0.32"/>
+    <xacro:property name="motor_left_pose" default="0.19"/>
+    <xacro:property name="motor_radius" default="0.035"/>
+    <xacro:property name="motor_lenght" default="0.18"/>
+    <xacro:property name="motor_height" default="0.13"/>
+
+    <xacro:property name="battery_height" default="0.13"/>
+
+    <xacro:property name="side_bar_front_pose" default="0.21"/>
+    <xacro:property name="side_bar_left_pose" default="0.16"/>
+    <xacro:property name="side_bar_height" default="0.16"/>
+
+    <xacro:property name="controller_box_height" default="0.37"/>
+
+</robot >

@@ -1,0 +1,213 @@
+<?xml version="1.0" ?>
+
+<!-- This is a just test xacro file so that anyone can do modifications here & 
+    test them out without making changes in original files 
+    for a rover robot model -->
+<!-- Author Muhammad Mursaleen -->
+<!-- email  muhammadmursaleen09@gmail.com -->
+
+<robot name="dom_lidar" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:property name="lidar_rs_16_bar_height" default="0.3565"/>
+    <xacro:property name="lidar_rs_16_sensor_height" default="0.3565"/>
+    <xacro:property name="lidar_rs_16_bar_mass" default="3"/>
+    <xacro:property name="lidar_rs_16_sensor_mass" default="0.87"/>\
+
+    <link name="realsense_link">
+      <pose>0.4 0 0.25 0 0 0</pose>
+      <visual name="realsense_link_visual">
+        <pose>0 0 0 -1.57 0 -1.57</pose>
+        <geometry>
+          <mesh>
+            <size>0.02505 0.090 0.025</size>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name="realsense_link_collision">
+        <pose>0 0 0 -1.57 0 -1.57</pose>
+        <geometry>
+          <box>
+            <size>0.02505 0.090 0.025</size>
+          </box>
+        </geometry>
+      </collision>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <inertia>
+          <ixx>0.001</ixx>
+          <ixy>0.000</ixy>
+          <ixz>0.000</ixz>
+          <iyy>0.001</iyy>
+          <iyz>0.000</iyz>
+          <izz>0.001</izz>
+        </inertia>
+        <mass>0.564</mass>
+      </inertial>
+
+      <sensor name="cameradepth" type="depth">
+        <camera name="camera">
+          <horizontal_fov>1.57</horizontal_fov>
+          <image>
+            <width>1280</width>
+            <height>720</height>
+          </image>
+          <clip>
+            <near>0.1</near>
+            <far>100</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.100</stddev>
+          </noise>
+        </camera>
+        <always_on>1</always_on>
+        <update_rate>30</update_rate>
+        <visualize>0</visualize>
+      </sensor>
+      <sensor name="cameracolor" type="camera">
+        <camera name="camera">
+          <horizontal_fov>1.57</horizontal_fov>
+          <image>
+            <width>1280</width>
+            <height>720</height>
+            <format>RGB_INT8</format>
+          </image>
+          <clip>
+            <near>0.1</near>
+            <far>100</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.007</stddev>
+          </noise>
+        </camera>
+        <always_on>1</always_on>
+        <update_rate>30</update_rate>
+        <visualize>1</visualize>
+      </sensor>
+      <sensor name="cameraired1" type="camera">
+        <camera name="camera">
+          <horizontal_fov>1.57</horizontal_fov>
+          <image>
+            <width>1280</width>
+            <height>720</height>
+            <format>L_INT8</format>
+          </image>
+          <clip>
+            <near>0.1</near>
+            <far>100</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.05</stddev>
+          </noise>
+        </camera>
+        <always_on>1</always_on>
+        <update_rate>1</update_rate>
+        <visualize>0</visualize>
+      </sensor>
+      <sensor name="cameraired2" type="camera">
+        <camera name="camera">
+          <horizontal_fov>1.57</horizontal_fov>
+          <image>
+            <width>1280</width>
+            <height>720</height>
+            <format>L_INT8</format>
+          </image>
+          <clip>
+            <near>0.1</near>
+            <far>100</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.05</stddev>
+          </noise>
+        </camera>
+        <always_on>1</always_on>
+        <update_rate>1</update_rate>
+        <visualize>0</visualize>
+      </sensor>
+    </link>
+
+    <joint name="realsense_joint" type="fixed">
+      <parent>${robot_name}_base_link</parent>
+      <child>realsense_link</child>
+      <pose>0.4 0 0.4 0 0 0</pose>
+    </joint>
+
+    <plugin name="camera" filename="librealsense_gazebo_plugin.so">
+      <prefix>camera</prefix>
+      <depthUpdateRate>30.0</depthUpdateRate>
+      <colorUpdateRate>30.0</colorUpdateRate>
+      <infraredUpdateRate>1.0</infraredUpdateRate>
+      <depthTopicName>aligned_depth_to_color/image_raw</depthTopicName>
+      <depthCameraInfoTopicName>depth/camera_info</depthCameraInfoTopicName>
+      <colorTopicName>color/image_raw</colorTopicName>
+      <colorCameraInfoTopicName>color/camera_info</colorCameraInfoTopicName>
+      <infrared1TopicName>infra1/image_raw</infrared1TopicName>
+      <infrared1CameraInfoTopicName>infra1/camera_info</infrared1CameraInfoTopicName>
+      <infrared2TopicName>infra2/image_raw</infrared2TopicName>
+      <infrared2CameraInfoTopicName>infra2/camera_info</infrared2CameraInfoTopicName>
+      <colorOpticalframeName>camera_color_optical_frame</colorOpticalframeName>
+      <depthOpticalframeName>camera_depth_optical_frame</depthOpticalframeName>
+      <infrared1OpticalframeName>camera_left_ir_optical_frame</infrared1OpticalframeName>
+      <infrared2OpticalframeName>camera_right_ir_optical_frame</infrared2OpticalframeName>
+      <rangeMinDepth>0.3</rangeMinDepth>
+      <rangeMaxDepth>3.0</rangeMaxDepth>
+      <pointCloud>true</pointCloud>
+      <pointCloudTopicName>depth/color/points</pointCloudTopicName>
+      <pointCloudCutoff>0.3</pointCloudCutoff>
+    </plugin>
+
+
+
+   
+ <gazebo reference="${robot_name}_lidar_rs_16_sensor_link">
+      <sensor type="ray" name="block_laser_sensor">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>flase</visualize>
+        <update_rate>10</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>360</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.14</min_angle>
+              <max_angle>3.14</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>15</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.261799</min_angle>
+              <max_angle>0.261799</max_angle>
+            </vertical>
+          </scan>
+
+          <range>
+            <min>0.40</min>
+            <max>150.0</max>
+            <resolution>0.02</resolution>
+          </range>
+
+          <noise>
+            <type>gaussian</type>
+            <!-- Noise parameters based on published spec for Hokuyo laser
+                achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+                stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+                reading. -->
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </ray>
+        <plugin name="robosense_rs_16" filename="libgazebo_ros_velodyne_laser.so">
+          <updateRate>20</updateRate>
+          <topicName>/robosense_rs_16/out</topicName>
+          <frameName>${robot_name}_lidar_rs_16_sensor_link</frameName>
+        </plugin>
+      </sensor>
+    </gazebo>
+</robot>

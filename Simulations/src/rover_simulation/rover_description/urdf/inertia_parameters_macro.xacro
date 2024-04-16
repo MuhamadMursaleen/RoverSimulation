@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<!-- This is a xacro file for defining all inertia parameters for a rover
+      robot model -->
+
+<!-- Author Muhammad Mursaleen -->
+<!-- email  muhammadmursaleen09@gmail.com -->
+
+<robot name="inertia" xmlns:xacro="http://ros.org/wiki/xacro">
+
+	<!-- Mass of All links in kg -->
+
+    <!-- Approximate Masses  -->
+    <xacro:property name="base_mass" default="15"/>
+    <xacro:property name="wheel_mass" default="6"/>
+    <xacro:property name="motor_mass" default="3"/>
+    <xacro:property name="battery_mass" default="20"/>
+    <xacro:property name="side_bar_mass" default="1"/> 
+    <xacro:property name="controller_box_mass" default="1"/>
+
+    <!-- Fake masses -->
+
+    <!-- <xacro:property name="base_mass" default="1"/>
+    <xacro:property name="wheel_mass" default="2"/>
+    <xacro:property name="motor_mass" default="0.2"/>
+    <xacro:property name="battery_mass" default="1"/>
+    <xacro:property name="side_bar_mass" default="0.1"/> 
+    <xacro:property name="controller_box_mass" default="0.1"/> -->
+
+
+
+    <!-- Masses End-->
+
+    <!-- Define intertial property macros  -->
+     <!-- inertia of box: mass = m, d/lenght =x, w/width = y, h/height =z-->
+    <xacro:macro name="box_inertia" params="m w h d">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${m}"/>
+        <inertia ixx="${(m/12) * (h*h + w*w)}" ixy="0.0" ixz="0.0" iyy="${(m/12) * (h*h + d*d)}" iyz="0.0" izz="${(m/12) * (w*w + d*d)}"/>
+      </inertial>
+    </xacro:macro>
+
+    <!-- inertia of cylinder: mass = m, r/radius =x, r/radius = y, h/height =z-->
+    <xacro:macro name="cylinder_inertia" params="m r h reflect:=0">
+      <inertial>
+        <origin xyz="0 0 0" rpy="${reflect*pi/2} 0 0" />
+        <mass value="${m}"/>
+        <inertia ixx="${(m/12) * (3*r*r + h*h)}" ixy = "0" ixz = "0" iyy="${(m/12) * (3*r*r + h*h)}" iyz = "0" izz="${(m/2) * (r*r)}"/>
+      </inertial>
+    </xacro:macro>
+
+    <!-- inertia of sphere:  mass = m, r/radius =x, r/radius = y, r/radius =z-->
+    <xacro:macro name="sphere_inertia" params="m r">
+      <inertial>
+        <mass value="${m}"/>
+        <inertia ixx="${(2/5) * m * (r*r)}" ixy="0.0" ixz="0.0" iyy="${(2/5) * m * (r*r)}" iyz="0.0" izz="${(2/5) * m * (r*r)}"/>
+      </inertial>
+    </xacro:macro>
+
+
+</robot >

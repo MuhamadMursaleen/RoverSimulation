@@ -1,0 +1,229 @@
+<?xml version="1.0" ?>
+
+<!-- This is a xacro file for defining robosense bpearl lidar with all supportive
+  links for a rover robot model -->
+<!-- Author Muhammad Mursaleen -->
+<!-- email  muhammadmursaleen09@gmail.com -->
+
+<robot name="robosense_bpearl" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:property name="robot_name" default="rover_robot"/>
+  <xacro:property name="side_lidar_bar_front_pose" default="0.0"/>
+  <xacro:property name="side_lidar_bar_left_pose" default="0.22"/>
+  <xacro:property name="side_lidar_bar_height" default="0.64"/>
+
+  <!-- in future to chnae height of the lidar then change the
+    "lidar_top_bar_height value" -->
+  <xacro:property name="lidar_top_bar_height" default="1.30"/>
+  <xacro:property name="lidar_top_box_height" default="-0.07"/>
+  <xacro:property name="lidar_top_bpearl_sensor_height" default="-0.12"/>
+
+  <!-- masses -->
+    <xacro:property name="side_lidar_bar_mass" default="4"/>
+    <xacro:property name="lidar_top_bar_mass" default="1"/>
+    <xacro:property name="lidar_top_box_mass" default=".5"/>
+    <xacro:property name="lidar_top_bpearl_sensor_mass" default=".5"/>
+  <!-- masess ended -->
+
+  <!-- Ranges -->
+
+  <!-- Actual Max range of bpearl = 30 -->
+  <xacro:property name="lidar_bpearl_sensor_max_range" default="30"/> 
+  <!-- Actual Min range of bpearl = 0.1 -->
+  <xacro:property name="lidar_bpearl_sensor_min_range" default="0.1"/>
+  <!-- Ranges End -->
+
+  <!-- Gazebo Color  -->
+
+  <gazebo reference="${robot_name}_lidar_top_box_link">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <gazebo reference="${robot_name}_lidar_top_bpearl_sensor_link">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Gazebo Color ended -->
+
+  <!-- side_lidar_bar_ Started -->
+  <!-- Define a macro named "Wheel" for a side_lidar_bar_ link and joint -->
+    <xacro:macro name="side_lidar_bar" params=" f_or_b l_or_r f_or_b_reflect l_or_r_reflect parent">
+      <link name="${robot_name}_${l_or_r}_${f_or_b}_side_lidar_bar_link">
+        <origin xyz="0 0 0"/>
+        <visual>
+          <geometry>
+            <box size="0.09 0.04 1.2"/>
+          </geometry>
+        </visual>
+        <collision>
+          <geometry>
+            <box size="0.09 0.04 1.2"/>
+          </geometry>
+        </collision>
+        <xacro:box_inertia m="${side_lidar_bar_mass}"  d="0.09 " w="0.04" h="1.2"/> 
+      </link>
+
+    <joint name="${robot_name}_${l_or_r}_${f_or_b}_side_lidar_bar_joint" type="fixed">
+        <parent link="${parent}"/>
+        <child link="${robot_name}_${l_or_r}_${f_or_b}_side_lidar_bar_link"/>
+        <origin xyz="${f_or_b_reflect} ${l_or_r_reflect} ${side_lidar_bar_height}" rpy="0 0 0"/>
+    </joint>
+    </xacro:macro>
+
+
+    <!-- front left side_lidar_bar-->
+    <xacro:side_lidar_bar  parent="${robot_name}_base_link" l_or_r="left" f_or_b="front"  
+        l_or_r_reflect="${side_lidar_bar_left_pose}" f_or_b_reflect="0"/>
+
+    <!-- Front Right side_lidar_bar -->
+    <xacro:side_lidar_bar  parent="${robot_name}_base_link" l_or_r="right" f_or_b="front"  
+        l_or_r_reflect="${-side_lidar_bar_left_pose}" f_or_b_reflect="0"/>
+
+    <!-- side_lidar_bar ended -->
+
+  <!-- lidar_top_bar -->
+  <!-- Define a macro named "robot_base_link" for a link with a box shape at (0, 1, 1) -->
+  <xacro:macro name="lidar_top_bar" params=" parent">
+    <link name="${robot_name}_lidar_top_bar_link">
+      <origin xyz="0 0 0"/>
+      <visual>
+        <geometry>
+          <box size="0.04 0.44 0.04"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.04 0.44 0.04"/>
+        </geometry>
+      </collision>
+      <xacro:box_inertia m="${lidar_top_bar_mass}"  d="0.04 " w="0.44" h="0.04"/> 
+    </link>
+
+    <!-- Add a joint between parent and ${robot_name}_base_link -->
+        <joint name="${parent}_to_${robot_name}_lidar_top_bar_link" type="fixed">
+          <parent link="${parent}"/>
+          <child link="${robot_name}_lidar_top_bar_link"/>
+          <origin xyz="0 0 ${lidar_top_bar_height}"/>
+        </joint>
+    </xacro:macro>
+
+      <!-- Use the "robot_base_link" macro to create a link named "my_robot_base_link" -->
+    <xacro:lidar_top_bar  parent="base_link"/>
+
+    <!-- lidar_top_bar Ended-->
+
+  <!-- lidar_top_box -->
+  <!-- Define a macro named "robot_base_link" for a link with a box shape at (0, 1, 1) -->
+  <xacro:macro name="lidar_top_box" params=" parent">
+    <link name="${robot_name}_lidar_top_box_link">
+      <origin xyz="0 0 0"/>
+      <visual>
+        <geometry>
+          <box size="0.1 0.1 0.1"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.1 0.1 0.1"/>
+        </geometry>
+      </collision>
+    <xacro:box_inertia m="${lidar_top_box_mass}"  d="0.1 " w="0.1" h="0.1"/> 
+  </link>
+
+  <!-- Add a joint between parent and ${robot_name}_base_link -->
+      <joint name="${parent}_to_${robot_name}_lidar_top_box_link" type="fixed">
+        <parent link="${parent}"/>
+        <child link="${robot_name}_lidar_top_box_link"/>
+        <origin xyz="0 0 ${lidar_top_box_height}"/>
+      </joint>
+  </xacro:macro>
+
+    <!-- Use the "robot_base_link" macro to create a link named "my_robot_base_link" -->
+  <xacro:lidar_top_box  parent="${robot_name}_lidar_top_bar_link"/>
+
+  <!-- lidar_top_box Ended-->
+
+  <!-- lidar_top_bpearl_sensor link-->
+  <!-- Define a macro named "robot_base_link" for a link with a box shape at (0, 1, 1) -->
+  <xacro:macro name="lidar_top_bpearl_sensor" params=" parent">
+    <link name="${robot_name}_lidar_top_bpearl_sensor_link">
+      <origin xyz="0 0 0"/>
+      <visual>
+        <geometry>
+          <sphere radius="0.05"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <sphere radius="0.05"/>
+
+        </geometry>
+      </collision>
+      <xacro:sphere_inertia m="${lidar_top_bpearl_sensor_mass}"  r="0.5"/> 
+    </link>
+
+    <!-- Add a joint between parent and ${robot_name}_base_link -->
+        <joint name="${parent}_to_${robot_name}_lidar_top_bpearl_sensor_link" type="fixed">
+          <parent link="${parent}"/>
+          <child link="${robot_name}_lidar_top_bpearl_sensor_link"/>
+          <origin xyz="0 0 ${lidar_top_bpearl_sensor_height}"/>
+        </joint>
+    </xacro:macro>
+
+      <!-- Use the "robot_base_link" macro to create a link named "my_robot_base_link" -->
+    <xacro:lidar_top_bpearl_sensor  parent="${robot_name}_lidar_top_bar_link"/>
+
+
+  <!-- Gazebo plugin for 3d lidar bpearl -->
+  <xacro:macro name="lidar_bpearl_sensor_plugin" >
+    <gazebo reference="${robot_name}_lidar_top_bpearl_sensor_link">
+        <sensor type="ray" name="block_laser_sensor">
+          <pose>0 0 0 0 0 0</pose>
+          <visualize>false</visualize>
+          <update_rate>5</update_rate>
+          <ray>
+            <scan>
+              <horizontal>
+                <samples>360</samples>
+                <resolution>1</resolution>
+                <min_angle>-3.14</min_angle>
+                <max_angle>0</max_angle>
+              </horizontal>
+              <vertical>
+                <samples>64</samples>
+                <resolution>1</resolution>
+                <min_angle>-3.14</min_angle>
+                <max_angle>0</max_angle>
+              </vertical>
+            </scan>
+
+            <range>
+              <min>${lidar_bpearl_sensor_min_range}</min>
+              <max>${lidar_bpearl_sensor_max_range}</max>
+              <resolution>0.01</resolution>
+            </range>
+
+            <noise>
+              <type>gaussian</type>
+              <!-- Noise parameters based on published spec for Hokuyo laser
+                  achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+                  stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+                  reading. -->
+              <mean>0.0</mean>
+              <stddev>0.01</stddev>
+            </noise>
+          </ray>
+          <plugin name="robosense_bpearl_lidar" filename="libgazebo_ros_velodyne_laser.so">
+            <updateRate>5</updateRate>
+            <topicName>/robosense_bpearl_lidar/out</topicName>
+            <frameName>${robot_name}_lidar_top_bpearl_sensor_link</frameName>
+            
+          </plugin>
+        </sensor>
+      </gazebo>
+    </xacro:macro>
+
+    
+    <!-- lidar_top_bpearl_sensor Ended-->
+
+</robot>

@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+
+<!-- This Xacro file will upload the rover model and it's tf tree only 
+      for a rover robot model -->
+<!-- Author Muhammad Mursaleen -->
+<!-- email  muhammadmursaleen09@gmail.com -->
+
+<robot name="default_skid_steer_drive" xmlns:xacro="http://ros.org/wiki/xacro">
+
+   <!-- define the name of your package below -->
+    <xacro:property name="package_name" default="rover_description"/>
+
+    <!--  define the name of your robot below-->
+    <xacro:property name="robot_name" default="rover_robot"/>
+
+    <!-- !!!! Above things are important, so use them in correct way !!!! -->
+
+  <!-- Add the defination of robot with links and joints  -->
+  <xacro:include filename="$(find ${package_name})/urdf/rover_macro.xacro" /> 
+
+  <!-- Sensors -->
+
+    <!-- Bpearl Lidar & all supportive link -->
+    <xacro:include filename="$(find ${package_name})/urdf/robosense_bpearl.xacro" />
+    
+    <!-- RS_16 lidar & all supportive links -->
+    <xacro:include filename="$(find ${package_name})/urdf/robosense_rs_16.xacro" />
+    
+    <!-- Tracking Camera t_265 & all supportive link -->
+    <xacro:include filename="$(find ${package_name})/urdf/intelrealsense_t265.xacro" />
+  
+</robot>

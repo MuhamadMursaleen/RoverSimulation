@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+
+<!-- This Xacro file uses the custom plugin for skid steer drive
+      for a rover robot model -->
+<!-- Author Muhammad Mursaleen -->
+<!-- email  muhammadmursaleen09@gmail.com -->
+
+<robot name="custom_skid_steer_drive" xmlns:xacro="http://ros.org/wiki/xacro">
+
+   <!-- define the name of your package below -->
+    <xacro:property name="package_name" default="rover_description"/>
+
+    <!--  define the name of your robot below-->
+    <xacro:property name="robot_name" default="rover_robot"/>
+
+    <!-- !!!!!! Above things are important, so use them in correct way !!!!!! -->
+
+  <!-- Add the defination of robot with links and joints  -->
+    <xacro:include filename="$(find ${package_name})/urdf/rover_macro.xacro" /> 
+
+  <!-- Sensors -->
+    
+    <xacro:include filename="$(find ${package_name})/urdf/robosense_bpearl.xacro" />
+    <!-- to trun gazebo plugins for lidar bpearl uncomment the line below   -->
+    <!-- <xacro:lidar_bpearl_sensor_plugin /> -->
+
+    <xacro:include filename="$(find ${package_name})/urdf/robosense_rs_16.xacro" />
+    <!-- to trun gazebo plugins for lidar rs_16 uncomment the line below   -->
+    <xacro:lidar_rs_16_sensor_plugin/>
+
+    <xacro:include filename="$(find ${package_name})/urdf/intelrealsense_t265.xacro" />
+    <!-- to trun gazebo plugins for camera t_265 uncomment the line below   -->
+    <!-- <xacro:intelrealsense_t265_sensor_plugin/> -->
+
+  <!-- Add custom plugin for skid steer drive -->
+    <xacro:include filename="$(find ${package_name})/urdf/wheel_rps_controller_macro.xacro" /> 
+    
+</robot>

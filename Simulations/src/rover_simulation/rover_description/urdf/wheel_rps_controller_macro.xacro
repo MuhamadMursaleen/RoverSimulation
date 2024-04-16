@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+
+<!-- This Xacro file contain the defination of custom controller for skid steer drive plugin
+      for a rover robot model -->
+<!-- Author Muhammad Mursaleen -->
+<!-- email  muhammadmursaleen09@gmail.com -->
+
+<robot name="custom_skid_steer_drive_plugin" xmlns:xacro="http://ros.org/wiki/xacro">
+
+   <!-- define the minimum & max radian per second of the wheel --> 
+   <xacro:property name="max_rps" default="14"/>
+   <xacro:property name="min_rps" default="${-1*max_rps}"/>
+
+   <!-- Velocity Configuration controller based on ros2 control -->
+      <ros2_control name="GazeboSystem" type="system">
+      <hardware>
+         <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      </hardware> 
+
+      <!-- add defination for velocity controller for _right_front_wheel_joint -->
+      <joint name="${robot_name}_right_front_wheel_joint">
+         <command_interface name="velocity">
+         <param name="min">${min_rps}</param>
+         <param name="max">${max_rps}</param>
+         </command_interface>
+         <state_interface name="position"/>
+         <state_interface name="velocity"/>
+         <state_interface name="effort"/>
+      </joint>
+
+      <!-- add defination for velocity controller for _left_front_wheel_joint -->
+      <joint name="${robot_name}_left_front_wheel_joint">
+         <command_interface name="velocity">
+         <param name="min">${min_rps}</param>
+         <param name="max">${max_rps}</param>
+         </command_interface>
+         <state_interface name="position"/>
+         <state_interface name="velocity"/>
+         <state_interface name="effort"/>
+      </joint>
+
+      <!-- add defination for velocity controller for _left_back_wheel_joint -->
+      <joint name="${robot_name}_left_back_wheel_joint">
+         <command_interface name="velocity">
+         <param name="min">${min_rps}</param>
+         <param name="max">${max_rps}</param>
+         </command_interface>
+         <state_interface name="position"/>
+         <state_interface name="velocity"/>
+         <state_interface name="effort"/>
+      </joint>
+
+      <!-- add defination for velocity controller for _right_back_wheel_joint -->
+      <joint name="${robot_name}_right_back_wheel_joint">
+         <command_interface name="velocity">
+         <param name="min">${min_rps}</param>
+         <param name="max">${max_rps}</param>
+         </command_interface>
+         <state_interface name="position"/>
+         <state_interface name="velocity"/>
+         <state_interface name="effort"/>
+      </joint>
+
+   </ros2_control>
+
+
+   <!-- Add gazebo plugin & configuration for ros2 control gazebo -->
+   <gazebo>
+      <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+         <parameters>$(find rover_description)/config/steering_controller_velocity.yaml</parameters>
+      </plugin>
+   </gazebo>
+   
+</robot>
